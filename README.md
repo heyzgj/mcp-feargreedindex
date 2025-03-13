@@ -2,10 +2,6 @@
 
 This project is a Model Context Protocol (MCP) server that provides Fear and Greed Index data from CoinMarketCap. It's designed to be easily integrated with Cursor, allowing you to access historical Fear and Greed Index values directly within your Cursor environment.
 
-## Project GitHub Repository
-
-[https://github.com/heyzgj/mcp-feargreedindex](https://github.com/heyzgj/mcp-feargreedindex)
-
 ## How to Add to Cursor MCP
 
 This project is built to be seamlessly integrated with Cursor's MCP feature. Here's how to add it:
@@ -48,9 +44,9 @@ This project is built to be seamlessly integrated with Cursor's MCP feature. Her
 
 5.  **Add to Cursor:**
     *   Open Cursor.
-    *   Go to Settings > Model Context Protocol.
+    *   Go to Settings > MCP.
     *   Add a new server with the following configuration:
-        *   **Server URL:** `http://localhost:3000` (or your server's address)
-        *   **Tool Name:** `get_fear_greed_index`
+        *   **TYPE:** `COMMAND`
+        *   **COMMAND:** `node ABSOLUTE PATH/dist/index.js`
 
 Now, you can use the `get_fear_greed_index` tool directly within Cursor to access Fear and Greed Index data!
