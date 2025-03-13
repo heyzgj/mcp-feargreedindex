@@ -3,5 +3,5 @@ dist/
 .env
 .DS_Store
 *.log 
-implementations.md
+implementation.md
 mcp-typescript.md
