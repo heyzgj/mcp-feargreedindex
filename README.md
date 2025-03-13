@@ -39,7 +39,6 @@ This project is built to be seamlessly integrated with Cursor's MCP feature. Her
     *   **Production:**
         ```bash
         npm run build
-        npm start
         ```
 
 5.  **Add to Cursor:**
