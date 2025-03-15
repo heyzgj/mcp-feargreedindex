@@ -14,6 +14,7 @@ export interface FearGreedData {
   timestamp: string;
   value: number;
   value_classification: string;
+  time_until_update?: string;
 }
 
 // Parameters for the MCP tool

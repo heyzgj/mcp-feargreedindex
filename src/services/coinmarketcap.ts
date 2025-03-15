@@ -10,6 +10,17 @@ import { formatErrorMessage, logError } from '../utils/error-handler';
  */
 export async function fetchFearGreedIndex(params: FearGreedParams): Promise<FearGreedResponse> {
   try {
+    // Debug logs
+    console.log('=== API Request Debug Info ===');
+    console.log('API Key (masked):', COINMARKETCAP_API_KEY ? '****' + COINMARKETCAP_API_KEY.substring(COINMARKETCAP_API_KEY.length - 4) : 'Not set');
+    console.log('Endpoint:', FEAR_GREED_ENDPOINT);
+    console.log('Params:', params);
+    
+    // Check if API key is provided
+    if (!COINMARKETCAP_API_KEY) {
+      throw new Error('CoinMarketCap API key is not configured');
+    }
+
     // Set up request configuration
     const config = {
       headers: {
@@ -18,16 +29,36 @@ export async function fetchFearGreedIndex(params: FearGreedParams): Promise<Fear
       },
       params: {
         start: params.start,
-        limit: params.limit || 50 // Default limit is 50
+        limit: params.limit || 10 // Default limit is 10
       }
     };
 
     // Make API request
+    console.log('Making API request...');
     const response = await axios.get<FearGreedResponse>(FEAR_GREED_ENDPOINT, config);
+    
+    // Log success
+    console.log('API request successful!');
+    console.log('Status:', response.status);
+    console.log('Data preview:', {
+      status: response.data.status,
+      dataCount: response.data.data?.length || 0
+    });
     
     // Return response data
     return response.data;
   } catch (error: any) {
+    // Log detailed error for debugging
+    console.error('=== API Request Error ===');
+    console.error('Error message:', error.message);
+    
+    if (error.response) {
+      console.error('Status:', error.response.status);
+      console.error('Status text:', error.response.statusText);
+      console.error('Response data:', error.response.data);
+      console.error('Response headers:', error.response.headers);
+    }
+    
     // Log error for debugging
     logError('fetchFearGreedIndex', error);
     
@@ -43,14 +74,14 @@ export async function fetchFearGreedIndex(params: FearGreedParams): Promise<Fear
  */
 export function validateFearGreedParams(params: FearGreedParams): void {
   if (params.limit !== undefined) {
-    if (params.limit < 1 || params.limit > 100) {
-      throw new Error('Limit must be between 1 and 100');
+    if (!Number.isInteger(params.limit) || params.limit < 1 || params.limit > 100) {
+      throw new Error('Limit must be an integer between 1 and 100');
     }
   }
 
   if (params.start !== undefined) {
-    if (params.start < 1) {
-      throw new Error('Start must be greater than 0');
+    if (!Number.isInteger(params.start) || params.start < 1) {
+      throw new Error('Start must be a positive integer');
     }
   }
-} 
+}
