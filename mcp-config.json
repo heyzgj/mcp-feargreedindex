@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+      "coinmarketcap_universal": {
+        "command": "/Users/supergeorge/.nvm/versions/node/v22.12.0/bin/node",
+        "args": ["/Users/supergeorge/Desktop/project/mcp-server/dist/index.js"],
+        "env": {
+          "CMC_API_KEY": "5b338a09-fe63-4cba-85fa-7228191c8de8"
+        }
+      }
+    }
+  } 

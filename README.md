@@ -1,6 +1,35 @@
-# MCP Server for Fear and Greed Index
+# CoinMarketCap Universal MCP Server
 
-This project is a Model Context Protocol (MCP) server that provides CoinMarketCap's Fear and Greed Index data. It is designed to be easily integrated into Cursor, allowing you to access historical Fear and Greed Index values directly within the Cursor environment.
+This project is a Model Context Protocol (MCP) server that provides comprehensive access to CoinMarketCap's cryptocurrency data. It is designed to be easily integrated into Cursor, allowing you to access a wide range of cryptocurrency data directly within the Cursor environment.
+
+## Features
+
+- **Comprehensive API Coverage**: Access to multiple CoinMarketCap API endpoints
+- **Smart Caching**: Reduces API calls and improves performance
+- **Type Safety**: Full TypeScript support with comprehensive type definitions
+- **Modular Design**: Easy to extend and maintain
+- **Detailed Error Handling**: Clear error messages and logging
+
+## Available Tools
+
+### Cryptocurrency Data
+- `get_cryptocurrency_listings` - Get latest cryptocurrency listings
+- `get_cryptocurrency_quotes` - Get quotes for specific cryptocurrencies
+- `get_cryptocurrency_info` - Get metadata for cryptocurrencies
+- `get_cryptocurrency_market_pairs` - Get market pairs for a cryptocurrency
+- `get_cryptocurrency_ohlcv` - Get historical OHLCV data
+- `convert_cryptocurrency` - Convert between cryptocurrencies and fiat currencies
+
+### Exchange Data
+- `get_exchange_listings` - Get latest exchange listings
+- `get_exchange_info` - Get detailed exchange information
+- `get_exchange_map` - Get a map of all exchanges
+
+### Global Market Data
+- `get_global_metrics` - Get global cryptocurrency market metrics
+
+### Market Sentiment
+- `get_fear_greed_index` - Get Fear & Greed Index data
 
 ## How to Add to Cursor MCP
 
@@ -9,8 +38,8 @@ This project is built to seamlessly integrate with Cursor's MCP functionality. H
 1. **Clone the repository and enter the project directory:**
 
    ```bash
-   git clone https://github.com/yourusername/mcp-feargreedindex.git
-   cd mcp-feargreedindex
+   git clone https://github.com/yourusername/coinmarketcap-mcp.git
+   cd coinmarketcap-mcp
    ```
 
 2. **Install dependencies:**
@@ -26,7 +55,8 @@ This project is built to seamlessly integrate with Cursor's MCP functionality. H
 
      ```
      CMC_API_KEY=YOUR_COINMARKETCAP_API_KEY
-     PORT=3000
+     CACHE_ENABLED=true
+     CACHE_TTL=300
      ```
 
      Replace `YOUR_COINMARKETCAP_API_KEY` with your actual API key.
@@ -49,52 +79,38 @@ This project is built to seamlessly integrate with Cursor's MCP functionality. H
      * **Type:** `COMMAND`
      * **Command:** `node ABSOLUTE PATH/dist/index.js`
 
-Now, you can use the `get_fear_greed_index` tool directly in Cursor to access Fear and Greed Index data!
+Now, you can use all the available tools directly in Cursor to access CoinMarketCap data!
 
-## Usage
+## Usage Examples
 
-In Cursor, you can call the tool with the following parameters:
-
+### Get the latest cryptocurrency listings
 ```js
-// Get the latest Fear and Greed Index
-get_fear_greed_index({
-  limit: 1
-})
-
-// Get multiple historical records
-get_fear_greed_index({
-  limit: 10
-})
-
-// Get data from a specific starting point
-get_fear_greed_index({
-  start: 2,
-  limit: 5
+get_cryptocurrency_listings({
+  limit: 10,
+  convert: "USD"
 })
 ```
 
-## API Response Format
+### Get quotes for specific cryptocurrencies
+```js
+get_cryptocurrency_quotes({
+  symbol: "BTC,ETH,SOL",
+  convert: "USD"
+})
+```
 
-The data returned by the tool is formatted as follows:
+### Get the Fear & Greed Index
+```js
+get_fear_greed_index({
+  limit: 7
+})
+```
 
-```json
-{
-  "status": {
-    "timestamp": "2023-04-12T12:00:00.000Z",
-    "error_code": 0,
-    "error_message": null,
-    "elapsed": 15,
-    "credit_count": 1
-  },
-  "data": [
-    {
-      "timestamp": "2023-04-11T12:00:00.000Z",
-      "value": 50,
-      "value_classification": "Neutral"
-    },
-    ...
-  ]
-}
+### Get global market metrics
+```js
+get_global_metrics({
+  convert: "USD"
+})
 ```
 
 ## Troubleshooting
@@ -104,3 +120,8 @@ If you encounter issues:
 1. Make sure you have a valid CoinMarketCap API key
 2. Check that the `.env` file is correctly configured
 3. Review the console logs for detailed error information
+4. Ensure your API plan has access to the endpoints you're trying to use
+
+## License
+
+MIT

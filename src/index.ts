@@ -5,64 +5,36 @@ dotenv.config();
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { fetchFearGreedIndex, validateFearGreedParams } from './services/coinmarketcap';
-import { logError } from './utils/error-handler';
-import { z } from 'zod';
-import axios from 'axios';
-import { COINMARKETCAP_API_KEY } from './config/config';
+import { APP_NAME, APP_VERSION, APP_DESCRIPTION, COINMARKETCAP_API_KEY } from './config/config';
+import { ToolRegistry } from './tools/base';
+import { registerCryptocurrencyTools } from './tools/cryptocurrency';
+import { registerExchangeTools } from './tools/exchange';
+import { registerGlobalTools } from './tools/global';
+import { registerFearGreedTools } from './tools/fear-greed';
+import { BaseApiService } from './services/base';
 
 // Display startup information
-console.log('=== MCP Fear & Greed Index Server ===');
+console.log(`=== ${APP_NAME} ===`);
 console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('API Key (masked):', COINMARKETCAP_API_KEY ? '****' + COINMARKETCAP_API_KEY.substring(COINMARKETCAP_API_KEY.length - 4) : 'Not set');
 
-// initialize mcp server
+// Initialize MCP server
 const server = new McpServer({
-  name: "CoinMarketCap Fear & Greed Index",
-  version: "1.0.0",
-  description: "Provides access to CoinMarketCap's Fear & Greed Index data"
+  name: APP_NAME,
+  version: APP_VERSION,
+  description: APP_DESCRIPTION
 });
 
-// register tool
-server.tool(
-  'get_fear_greed_index',
-  {
-    start: z.number().int().positive().optional().describe('Starting point of data retrieval (optional)'),
-    limit: z.number().int().min(1).max(100).optional().default(10).describe('Number of records to return (default: 10, max: 100)')
-  },
-  async (params) => {
-    try {
-      // Validate parameters
-      validateFearGreedParams(params);
-      
-      // Fetch data
-      console.log('Fetching Fear & Greed data with params:', params);
-      const data = await fetchFearGreedIndex(params);
-      
-      // Return results
-      return {
-        content: [{ 
-          type: "text", 
-          text: JSON.stringify(data, null, 2)
-        }]
-      };
-    } catch (error: any) {
-      // Log error
-      logError('get_fear_greed_index', error);
-      
-      // Return error message
-      return {
-        content: [{ 
-          type: "text", 
-          text: `Error: ${error.message}`
-        }],
-        isError: true
-      };
-    }
-  }
-);
+// Create tool registry
+const registry = new ToolRegistry(server);
 
-// use STDIO transport
+// Register all tools
+registerCryptocurrencyTools(registry);
+registerExchangeTools(registry);
+registerGlobalTools(registry);
+registerFearGreedTools(registry);
+
+// Use STDIO transport
 const transport = new StdioServerTransport();
 
 // Start the server
@@ -78,15 +50,16 @@ const transport = new StdioServerTransport();
     try {
       console.log('Validating API key...');
       
-      // Use key info endpoint for validation
-      const response = await axios.get('https://pro-api.coinmarketcap.com/v1/key/info', {
-        headers: {
-          'X-CMC_PRO_API_KEY': COINMARKETCAP_API_KEY
-        }
-      });
+      // Use base service for validation
+      const baseService = new BaseApiService();
+      const isValid = await baseService.validateApiKey();
       
-      console.log('API key validation successful!');
-      console.log('API Plan:', response.data?.data?.plan?.name || 'Unknown');
+      if (isValid) {
+        console.log('API key validation successful!');
+      } else {
+        console.warn('API key validation failed!');
+        console.warn('Continuing anyway...');
+      }
     } catch (error: any) {
       console.warn('API key validation warning:', error.message);
       console.warn('Continuing anyway...');
@@ -95,7 +68,18 @@ const transport = new StdioServerTransport();
     // Connect transport
     await server.connect(transport);
     console.log('MCP Server (STDIO) started!');
-    console.log('Tool available: get_fear_greed_index');
+    console.log('Available tools:');
+    console.log('- get_fear_greed_index');
+    console.log('- get_cryptocurrency_listings');
+    console.log('- get_cryptocurrency_quotes');
+    console.log('- get_cryptocurrency_info');
+    console.log('- get_cryptocurrency_market_pairs');
+    console.log('- get_cryptocurrency_ohlcv');
+    console.log('- convert_cryptocurrency');
+    console.log('- get_global_metrics');
+    console.log('- get_exchange_listings');
+    console.log('- get_exchange_info');
+    console.log('- get_exchange_map');
   } catch (error: any) {
     console.error('Failed to start server:', error.message);
     process.exit(1);

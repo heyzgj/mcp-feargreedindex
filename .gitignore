@@ -6,3 +6,6 @@ dist/
 implementation.md
 mcp-typescript.md
 test-client.js
+implementation-scaleup.md
+IMPLEMENTATION_PLAN.md
+.cursor
